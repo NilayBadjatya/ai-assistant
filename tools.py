@@ -1,3 +1,4 @@
+import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -5,6 +6,65 @@ def get_current_time(country: str) -> str:
     """Returns the current time for a given time zone."""
     current_time = datetime.now(ZoneInfo(country))
     return current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+def get_weather(city: str) -> str:
+    """Fetch current weather for a city."""
+
+    # Step A: Convert city name into latitude and longitude
+    geo_url = "https://geocoding-api.open-meteo.com/v1/search"
+
+    geo_response = requests.get(
+        geo_url,
+        params={"name": city, "count": 1},
+        timeout=10
+    )
+    geo_response.raise_for_status()
+
+    locations = geo_response.json().get("results", [])
+
+    if not locations:
+        return f"Could not find the city: {city}"
+
+    location = locations[0]
+    latitude = location["latitude"]
+    longitude = location["longitude"]
+    city_name = location["name"]
+    country = location.get("country", "")
+
+    # Step B: Fetch current weather
+    weather_url = "https://api.open-meteo.com/v1/forecast"
+
+    weather_response = requests.get(
+        weather_url,
+        params={
+            "latitude": latitude,
+            "longitude": longitude,
+            "current": (
+                "temperature_2m,"
+                "relative_humidity_2m,"
+                "apparent_temperature,"
+                "is_day,"
+                "precipitation,"
+                "weather_code,"
+                "wind_speed_10m"
+            ),
+            "timezone": "auto"
+        },
+        timeout=10
+    )
+    weather_response.raise_for_status()
+
+    current = weather_response.json()["current"]
+
+    return (
+        f"Weather in {city_name}, {country}:\n"
+        f"Temperature: {current['temperature_2m']}°C\n"
+        f"Feels like: {current['apparent_temperature']}°C\n"
+        f"Humidity: {current['relative_humidity_2m']}%\n"
+        f"Wind speed: {current['wind_speed_10m']} km/h\n"
+        f"Precipitation: {current['precipitation']} mm\n"
+        f"Weather code: {current['weather_code']}"
+    )
 
 
 tools = [
@@ -28,10 +88,28 @@ tools = [
                 "additionalProperties" : False,
             }
         }
+    },
+    {
+        "type" : "function",
+        "function" : {
+            "name" : "get_weather",
+            "description" : "Fetches the current weather for a given city. Use when user asks for weather       related information.",
+            "parameters" : {
+                "type" : "object",
+                "properties" : {
+                    "city" : {
+                        "type" : "string",
+                        "description" : "Name of the city to fetch weather for."
+                    }
+                },
+                "required" : ["city"]
+            }
+        }
     }
 ]
 
 
 function_map = {
+    "get_weather" : get_weather,
     "get_current_time" : get_current_time
 }  
