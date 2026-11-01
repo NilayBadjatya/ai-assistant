@@ -17,7 +17,7 @@ messages = []
 messages.append(
     {
         "role" : "system",
-        "content" : "Answers question in a humorous way and respond under 20 words."
+        "content" : "Responds under 20 words."
     }
 )
 
@@ -35,15 +35,20 @@ while True:
         }
     )
 
-    response = client.chat.completions.create(
-        model = os.getenv("MODEL"),
-        messages = messages,
-        tools = tools,
-    )
-
-    msg = response.choices[0].message
     # Check if the response contains a function call
-    if msg.tool_calls:
+    while True:
+
+        response = client.chat.completions.create(
+            model = os.getenv("MODEL"),
+            messages = messages,
+            tools = tools,
+        )
+
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            break
+
         messages.append(msg);
 
         for tool_call in msg.tool_calls:
@@ -60,14 +65,6 @@ while True:
                     "content": str(result)
                 }
             )
-
-        # 2nd call to the model with the tool's response
-        response = client.chat.completions.create(
-            model = os.getenv("MODEL"),
-            messages = messages,
-        )
-
-        msg = response.choices[0].message
 
     messages.append(
         {
