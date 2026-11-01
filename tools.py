@@ -1,6 +1,9 @@
 import requests
+import os
+import smtplib
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from email.mime.text import MIMEText
 
 def get_current_time(country: str) -> str:
     """Returns the current time for a given time zone."""
@@ -69,6 +72,22 @@ def get_weather(city: str) -> str:
         f"Weather code: {current['weather_code']}"
     )
 
+def send_email(to: str, subject: str, body: str):
+    """Sends a mail to the given recipent"""
+    sender = os.getenv("EMAIL_ADDRESS")
+    password = os.getenv("EMAIL_APP_PASSWORD")
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = to
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(sender, password)
+        server.sendmail(sender, [to], msg.as_string())
+
+    return f"Email sent to {to}"
+
 
 tools = [
     {
@@ -119,6 +138,32 @@ tools = [
                 "properties" : {}
             }
         }
+    },
+    {
+        "type" : "function",
+        "function" : {
+            "name" : "send_email",
+            "description" : "Sends an email to the given recipient.",
+            "parameters" : {
+                "type" : "object",
+                "properties" : {
+                    "to" : {
+                        "type" : "string",
+                        "description" : "Email address of the recipient."
+                    },
+                    "subject" : {
+                        "type" : "string",
+                        "description" : "Subject of the email."
+                    },
+                    "body" : {
+                        "type" : "string",
+                        "description" : "Body of the email."
+                    }
+                },
+                "required" : ["to", "subject", "body"],
+                "additionalProperties" : False
+            }
+        }
     }
 ]
 
@@ -126,5 +171,6 @@ tools = [
 function_map = {
     "get_weather" : get_weather,
     "get_current_time" : get_current_time,
-    "get_user_city" : get_user_city
+    "get_user_city" : get_user_city,
+    "send_email" : send_email
 }  
