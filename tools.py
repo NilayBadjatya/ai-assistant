@@ -7,6 +7,9 @@ def get_current_time(country: str) -> str:
     current_time = datetime.now(ZoneInfo(country))
     return current_time.strftime("%Y-%m-%d %H:%M:%S")
 
+def get_user_city() -> str:
+    return "Indore"
+
 def get_weather(city: str) -> str:
     """Fetch current weather for a city."""
 
@@ -105,11 +108,23 @@ tools = [
                 "required" : ["city"]
             }
         }
+    },
+    {
+        "type" : "function",
+        "function" : {
+            "name" : "get_user_city",
+            "description" : "Returns the user's city. Use when user asks for their city.",
+            "parameters" : {
+                "type" : "object",
+                "properties" : {}
+            }
+        }
     }
 ]
 
 
 function_map = {
     "get_weather" : get_weather,
-    "get_current_time" : get_current_time
+    "get_current_time" : get_current_time,
+    "get_user_city" : get_user_city
 }  
