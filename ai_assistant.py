@@ -14,7 +14,7 @@ client = OpenAI(
 # Store the converstaion history in a list of messages
 messages = []
 
-MAX_STEPS = 1
+MAX_STEPS = 10
 
 messages.append(
     {
