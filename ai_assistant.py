@@ -14,6 +14,8 @@ client = OpenAI(
 # Store the converstaion history in a list of messages
 messages = []
 
+MAX_STEPS = 1
+
 messages.append(
     {
         "role" : "system",
@@ -35,8 +37,9 @@ while True:
         }
     )
 
-    # Check if the response contains a function call
-    while True:
+    tool_call_count = 0
+    # Chained Tool Calling(Agent Loop)
+    while tool_call_count <= MAX_STEPS:
 
         response = client.chat.completions.create(
             model = os.getenv("MODEL"),
@@ -49,14 +52,18 @@ while True:
         if not msg.tool_calls:
             break
 
-        messages.append(msg);
+        messages.append(msg)
 
         for tool_call in msg.tool_calls:
             function_name = tool_call.function.name
-            function_args = json.loads(tool_call.function.arguments or "{}")
+            function_args =  {}
 
-            function = function_map.get(function_name)
-            result = function(**function_args) # Convert the arguments to a dictionary and pass them as keyword arguments ex: get_current_time(country="Asia/Kolkata") previously the function_args was like a string, now it is a dictionary.
+            try:
+                function_args = json.loads(tool_call.function.arguments or "{}")
+                function = function_map.get(function_name)
+                result = function(**function_args) # Convert the arguments to a dictionary and pass them as keyword arguments ex: get_current_time(country="Asia/Kolkata") previously the function_args was like a string, now it is a dictionary.
+            except Exception as e:
+                result = f"Error calling function '{function_name}': {str(e)}"
 
             messages.append(
                 {
@@ -65,6 +72,17 @@ while True:
                     "content": str(result)
                 }
             )
+
+        tool_call_count += 1  
+
+    else:
+        fallback = "Maximum tool call limit reached. Please try again with a different query."
+        messages.append({
+            "role": "assistant",
+            "content": fallback
+        })
+        print(f"\nAssistant: {fallback}")
+        continue
 
     messages.append(
         {
