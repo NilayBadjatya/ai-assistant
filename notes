@@ -1,6 +1,8 @@
 To run the virtual enviornment :
-    .venv\Scripts\activate
+    .venv\Scripts\activate (Windows command), source .venv/bin/activate(macOS command)
     deactivate
+
+Localhost base url for hitting ollama servers -> http://localhost:11434/v1
 
 To run the python Scripts
     first run the ollama server on cmd by using the command "ollama serve" then ->
@@ -28,7 +30,6 @@ The f before a string indicates an f-string, short for formatted string literal.
 It lets you insert the values of Python variables or expressions directly into a string using curly braces {}.
 
 pip stands for "Pip Installs Packages." It's Python's package manager, which you use to install, update, and manage external Python libraries.
-
 
 """Fetch current weather for a city.""" -> This is a docstring. It documents the purpose of the function. Python doesn't execute it as a command.
 
