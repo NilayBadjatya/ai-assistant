@@ -1,0 +1,34 @@
+To run the virtual enviornment :
+    .venv\Scripts\activate
+    deactivate
+
+To run the python Scripts
+    first run the ollama server on cmd by using the command "ollama serve" then ->
+   python ai_assistant.py
+
+
+Packages installed -> openai compatible api client
+
+Traits Of A Good Prompt :-
+R -> Role
+C -> Constraints
+C -> Context
+T -> Task
+E -> Examples
+F -> Format
+
+When we give couple of examples in the prompt then it is called **Few-Shot Prompt**.
+
+When we say to LLM to behave in a certain manner and then we give prompt like -
+"Ignore the previous instructions" Then this phenomenon is called **Prompt Injection**.
+
+raise_for_status() checks HTTP status codes.
+
+The f before a string indicates an f-string, short for formatted string literal.
+It lets you insert the values of Python variables or expressions directly into a string using curly braces {}.
+
+pip stands for "Pip Installs Packages." It's Python's package manager, which you use to install, update, and manage external Python libraries.
+
+
+"""Fetch current weather for a city.""" -> This is a docstring. It documents the purpose of the function. Python doesn't execute it as a command.
+
