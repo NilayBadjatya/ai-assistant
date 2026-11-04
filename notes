@@ -33,3 +33,8 @@ pip stands for "Pip Installs Packages." It's Python's package manager, which you
 
 """Fetch current weather for a city.""" -> This is a docstring. It documents the purpose of the function. Python doesn't execute it as a command.
 
+Importing should follow this pattern
+#Standard Library imports
+#Third party imports
+#local imports
+

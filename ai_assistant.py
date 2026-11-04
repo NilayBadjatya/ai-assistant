@@ -1,8 +1,14 @@
+# Standard library imports
 import json
 import os
+
+# Third-party imports
 from openai import OpenAI
 from dotenv import load_dotenv
+
+# Local application imports
 from tools import tools, function_map
+from Utilities.utilities import log
 
 load_dotenv()
 
@@ -52,6 +58,8 @@ while True:
         if not msg.tool_calls:
             break
 
+        log(f"Step {tool_call_count + 1}: model requested {len(msg.tool_calls)} tool calls.")
+
         messages.append(msg)
 
         for tool_call in msg.tool_calls:
@@ -61,9 +69,12 @@ while True:
             try:
                 function_args = json.loads(tool_call.function.arguments or "{}")
                 function = function_map.get(function_name)
+                log(f" 🔧 Calling function '{function_name}' with arguments: {function_args}")
                 result = function(**function_args) # Convert the arguments to a dictionary and pass them as keyword arguments ex: get_current_time(country="Asia/Kolkata") previously the function_args was like a string, now it is a dictionary.
+                log(f"   ➡️  Function result: {result}")
             except Exception as e:
                 result = f"Error calling function '{function_name}': {str(e)}"
+                log(f"Error calling function '{function_name}': {str(e)}")
 
             messages.append(
                 {
