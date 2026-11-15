@@ -38,3 +38,6 @@ Importing should follow this pattern
 #Third party imports
 #local imports
 
+TTFT -> Time To First Token (known as Streaming)
+        It is the duration between sending a prompt to a LLM and receiving the first peice of output.
+

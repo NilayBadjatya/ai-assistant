@@ -1,5 +1,4 @@
 # Standard library imports
-import json
 import os
 
 # Third-party imports
@@ -7,7 +6,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # Local application imports
-from tools import tools, function_map
+from tools import tools, run_tool
 from Utilities.utilities import log
 
 load_dotenv()
@@ -63,19 +62,7 @@ while True:
         messages.append(msg)
 
         for tool_call in msg.tool_calls:
-            function_name = tool_call.function.name
-            function_args =  {}
-
-            try:
-                function_args = json.loads(tool_call.function.arguments or "{}")
-                function = function_map.get(function_name)
-                log(f" 🔧 Calling function '{function_name}' with arguments: {function_args}")
-                result = function(**function_args) # Convert the arguments to a dictionary and pass them as keyword arguments ex: get_current_time(country="Asia/Kolkata") previously the function_args was like a string, now it is a dictionary.
-                log(f"   ➡️  Function result: {result}")
-            except Exception as e:
-                result = f"Error calling function '{function_name}': {str(e)}"
-                log(f"Error calling function '{function_name}': {str(e)}")
-
+            result = run_tool(tool_call)
             messages.append(
                 {
                     "role": "tool",

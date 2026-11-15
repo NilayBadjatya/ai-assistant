@@ -1,9 +1,11 @@
+import json
 import requests
 import os
 import smtplib
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from email.mime.text import MIMEText
+from Utilities.utilities import log
 
 def get_current_time(country: str) -> str:
     """Returns the current time for a given time zone."""
@@ -166,6 +168,23 @@ tools = [
         }
     }
 ]
+
+def run_tool(tool_call):
+    function_name = tool_call.function.name
+    function_args =  {}
+
+    try:
+        function_args = json.loads(tool_call.function.arguments or "{}")
+        function = function_map.get(function_name)
+        log(f" 🔧 Calling function '{function_name}' with arguments: {function_args}")
+        result = function(**function_args) # Convert the arguments to a dictionary and pass them as keyword arguments ex: get_current_time(country="Asia/Kolkata") previously the function_args was like a string, now it is a dictionary.
+        log(f"   ➡️  Function result: {result}")
+        return result
+    except Exception as e:
+        result = f"Error calling function '{function_name}': {str(e)}"
+        log(f"Error calling function '{function_name}': {str(e)}")
+        return result
+
 
 
 function_map = {
