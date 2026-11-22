@@ -41,3 +41,10 @@ Importing should follow this pattern
 TTFT -> Time To First Token (known as Streaming)
         It is the duration between sending a prompt to a LLM and receiving the first peice of output.
 
+print(delta.content, end="", flush=True)
+    Here "end" means that we do not have to change line because python by default adds newline after printing a statement.
+    flush is a parameter of the print() function that controls when buffered output is sent to its destination (e.g., terminal).
+    flush=False (default): Python may temporarily keep output in a buffer before displaying it.
+    flush=True: Immediately sends all pending buffered output to the destination.
+    When fluhsh=False so each chunks are printed at the same time and streaming is not observed
+
