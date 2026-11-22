@@ -48,3 +48,6 @@ print(delta.content, end="", flush=True)
     flush=True: Immediately sends all pending buffered output to the destination.
     When fluhsh=False so each chunks are printed at the same time and streaming is not observed
 
+open(path, "r", encoding='utf-8')
+    Here encoding is a generalised language which system uses to transform characters into bytes because different machines like windows, mac may convert the same character into different bytes.
+
